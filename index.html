@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synth Generator</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/tone/14.6.9/Tone.js'></script>
+    <script src="https://unpkg.com/@tonejs/ui"></script>
+</head>
+
+<body>
+
+    <button>Play</button>
+    <tone-keyboard octaves="4"></tone-keyboard>
+    </tone-demo>
+    <tone-slider></tone-slider>
+
+    <script>
+
+
+        document.querySelector("button").addEventListener("click", function () {
+            Tone.start();
+        })
+
+        let synth = new Tone.MembraneSynth().toMaster()
+        let synth2 = new Tone.MonoSynth().toMaster();
+        let synth3 = new Tone.PolySynth(Tone.MonoSynth).toMaster();
+
+
+        //create a loop
+        let notes = ['C2', 'C3', 'C2', "C3", 'A1', 'A2', 'A1', 'A2', 'G1', 'G2', 'G1', 'G2', 'G1', 'G2', 'G1', 'G2']
+        let loop = new Tone.Loop(function (time) {
+
+            synth.triggerAttackRelease(notes[0], "4n", time)
+            synth2.triggerAttackRelease(notes[0], "8n", time)
+            synth2.triggerAttackRelease(notes[1], "8n", Tone.Time(time) + Tone.Time('8n'))
+            
+            notes.push(notes.shift())
+            notes.push(notes.shift())
+
+
+        }, "4n")
+
+        //play the loop starting at beginning of transport with no end
+        loop.start(0)
+
+        //start/stop the transport
+        document.querySelector('button').addEventListener('click', e => Tone.Transport.toggle())
+
+
+    </script>
+</body>
+
+</html>
