@@ -32,9 +32,9 @@
             console.log('starting')
         })
 
-        let synth = new Tone.MembraneSynth().toMaster()
-        let synth2 = new Tone.MonoSynth().toMaster();
-        let synth3 = new Tone.PolySynth(Tone.MonoSynth).toMaster();
+        let synth = new Tone.MembraneSynth().toDestination()
+        let synth2 = new Tone.MonoSynth().toDestination();
+        let synth3 = new Tone.PolySynth(Tone.MonoSynth).toDestination();
 
 
         //create a loop
