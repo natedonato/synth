@@ -5,48 +5,107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Synth Generator</title>
+
+
+    
     <script src='https://cdnjs.cloudflare.com/ajax/libs/tone/14.6.9/Tone.js'></script>
     <script src="https://unpkg.com/@tonejs/ui"></script>
 </head>
 
 <body>
 
-    <button>Play</button>
+    <button id='play'>Play</button>
+
+    <button id='mod'>Modulate</button>
+
+
     <tone-keyboard octaves="4"></tone-keyboard>
     </tone-demo>
-    <tone-slider></tone-slider>
+
+        <input id="bpm" type="range" id="rangeinput" min="1" max="250" value="120" />
+
+    </input>
 
     <script>
 
 
-        document.querySelector("button").addEventListener("click", function () {
-            Tone.start();
-        })
+        let kick = new Tone.MembraneSynth().toMaster()
+        let synth = new Tone.MonoSynth().toMaster();
+        let keyboard = new Tone.PolySynth(Tone.MonoSynth).toMaster();
 
-        let synth = new Tone.MembraneSynth().toMaster()
-        let synth2 = new Tone.MonoSynth().toMaster();
-        let synth3 = new Tone.PolySynth(Tone.MonoSynth).toMaster();
+        // let player = new Tone.Player("./samples/sample01.mp3").toMaster();
+        // player.start(0);
+
+        let dict = 'ABCDEFG'
+        let range = '1234'
+
+        let notes = ['C2', 'C3', 'C2', "C3", 'A1', null, 'A1', 'A2', 'G1', 'G2', 'G1', 'G2', 'G1', 'G2', 'G1', 'G2']
+
+        function newNotes() {
+            for(let i = 0; i < notes.length; i ++){
+                const rand = Math.random();
+
+
+                if(rand > 0.8){
+                    notes[i] = null;
+                }else{
+                    notes[i] = dict[Math.floor(Math.random() * dict.length)] + range[Math.floor(Math.random() * range.length)]
+                }
+            }
+
+            console.log(notes);
+        }
+
 
 
         //create a loop
-        let notes = ['C2', 'C3', 'C2', "C3", 'A1', 'A2', 'A1', 'A2', 'G1', 'G2', 'G1', 'G2', 'G1', 'G2', 'G1', 'G2']
         let loop = new Tone.Loop(function (time) {
-
-            synth.triggerAttackRelease(notes[0], "4n", time)
-            synth2.triggerAttackRelease(notes[0], "8n", time)
-            synth2.triggerAttackRelease(notes[1], "8n", Tone.Time(time) + Tone.Time('8n'))
-            
+            kick.triggerAttackRelease(notes[0], "4n", time)
+            synth.triggerAttackRelease(notes[0], "8n", time)
+            synth.triggerAttackRelease(notes[1], "8n", Tone.Time(time) + Tone.Time('8n'))
             notes.push(notes.shift())
             notes.push(notes.shift())
-
-
         }, "4n")
 
-        //play the loop starting at beginning of transport with no end
-        loop.start(0)
+        loop.humanize = true;
 
-        //start/stop the transport
-        document.querySelector('button').addEventListener('click', e => Tone.Transport.toggle())
+        
+        //play the loop starting at beginning of transport with no end
+         loop.start(0)
+    
+
+
+
+        //using a Part as a loop 
+        // var part = new Tone.Part(function (time, value) {
+        //         //the value is an object which contains both the note and the velocity
+        //         synth.triggerAttackRelease(value.note, "8n", time, value.velocity);
+        //     }, partNotes);
+            
+        //     part.loop = true;
+        //     part.start(0);
+
+        const bpm = document.getElementById('bpm')
+        
+        bpm.addEventListener('change', e =>{
+            Tone.Transport.bpm.value = bpm.value;
+        })
+
+
+
+    document.getElementById("play").addEventListener("click", function () {
+        Tone.start();
+    })
+
+    //start/stop the transport
+    document.getElementById('play').addEventListener('click', e => Tone.Transport.toggle())
+
+
+        document.getElementById('mod').addEventListener('click', e => {
+            newNotes();
+        })
+
+
 
 
     </script>
